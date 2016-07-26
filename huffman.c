@@ -60,6 +60,17 @@ void buildCodes(node *n, char **codes, char *code){
         free(code);
     }
 }
+
+//Encodes file
+void encode(FILE *input, char *out, char** codes){
+	char x;
+	while ((x=fgetc(input))!=EOF){
+		strcpy(out, codes[x]);
+		out += strlen(codes[x++]);
+	}
+}
+
+
 // not complete
 int main(void){
 	printf("hui\n");
@@ -73,26 +84,28 @@ int main(void){
     output = fopen("output.txt","w");
     printf("hey2\n");
 	node *n = buildTree(input);
-	static char *code[128];
+	static char *codes[128];
 	char *prefix = (char *)calloc(1, sizeof(char));
-	buildCodes(n,code,prefix);
+	buildCodes(n,codes,prefix);
 
 
 	printf("hey4\n");
 	for (i = 0; i < 128; i++){
-		if (code[i]) {
-			printf("'%c': %s\n", i, code[i]);
+		if (codes[i]) {
+			printf("'%c': %s\n", i, codes[i]);
 		}
 	}
 	printf("hey5\n");
-	fclose(input);
-	input = fopen(filename, "r");
-	//encode(input, buf);
-	//printf("encoded: %s\n", buf);
+	// fclose(input);
+	// input = fopen(filename, "r");
+	rewind(input);
+	encode(input, buf, codes);
+	printf("hey6\n");
+	printf("encoded: %s\n", buf);
  
-	//printf("decoded: ");
-	//decode(buf, hp[1]);
- 	fclose(input);
- 	fclose(output);
+	printf("decoded: ");
+	//decode(buf, n);
+ 	// fclose(input);
+ 	// fclose(output);
 	return 0;
 }

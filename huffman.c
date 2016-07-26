@@ -63,7 +63,7 @@ void buildCodes(node *n, char **codes, char *code){
     {
     	char* result = (char *)malloc(strlen(code) + 2);
     	sprintf(result, "%s%c", code, '0');
-        if(n->left) buildCodes(n->left, codes, result );//strcat(code, '0'));
+        if(n->left) buildCodes(n->left, codes, result );
 		sprintf(result, "%s%c", code, '1');
         if(n-> right) buildCodes(n->right, codes, result);
     }
@@ -73,7 +73,6 @@ void buildCodes(node *n, char **codes, char *code){
 void encode(FILE *input, char *out, char** codes, FILE *output){
 	char x;
 	while ((x=fgetc(input))!=EOF){
-		//strcpy(out, codes[x]);
 		fputs(codes[x],output);
 		out += strlen(codes[x]);
 	}
@@ -84,10 +83,6 @@ void decode(FILE *input, char *out, node* n){
 	char x;
 	node* temp = n;
 	while ((x=fgetc(input))!=EOF){
-		// if(temp->letter){
-		// 	putchar(temp->letter);
-		// 	temp = n;
-		// }
 		if(x=='1'){
 			temp = temp->right;
 		} else {

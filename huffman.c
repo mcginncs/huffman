@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+//gcc huffman.c -o huffman
 // Each char in the input file has a corresponding node
  typedef struct node_t{
  	int freq; // # of times this char appears in the input file
@@ -92,11 +92,11 @@ int main(void){
 	node *n = buildTree(input);
 
 	
-	static char *code[128];
+	static char *codes[128];
 	
 	char *prefix = (char *)calloc(1, sizeof(char));
 	
-	buildCodes(n,code,prefix);
+	buildCodes(n,codes,prefix);
 	printf("THIS WON'T DISPLAY UNTIL buildCodes() BUG IS FIXED\n");
 	
 	for (i = 0; i < 128; i++){

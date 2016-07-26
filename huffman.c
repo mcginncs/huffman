@@ -70,56 +70,38 @@ void buildCodes(node *n, char **codes, char *code){
 }
 
 //Encodes file
-void encode(FILE *input, char *out, char** codes){
+void encode(FILE *input, char *out, char** codes, FILE *output){
 	char x;
 	while ((x=fgetc(input))!=EOF){
-		strcpy(out, codes[x]);
-		out += strlen(codes[x++]);
+		//strcpy(out, codes[x]);
+		fputs(codes[x],output);
+		out += strlen(codes[x]);
 	}
+	printf("done encode\n");
 }
 
 void decode(FILE *input, char *out, node* n){
 	char x;
 	node* temp = n;
 	while ((x=fgetc(input))!=EOF){
-
+		// if(temp->letter){
+		// 	putchar(temp->letter);
+		// 	temp = n;
+		// }
 		if(x=='1'){
-			n = n->right;
+			temp = temp->right;
 		} else {
-			n = n->left;
+			temp = temp->left;
 		}
-		if(n->letter){
-			putchar(n->letter);
+		if(temp->letter){
+			putchar(temp->letter);
 			temp = n;
 		}
 	}
+	printf("decoding\n");
 }
 
 
-
-//Decodes
-//Change slightly to make output in file
-// void decode(const char *s, node t){//, FILE *output){
-// 	node n = t;
-// 	while (*s) {
-// 		if (*s++ == '0'){
-// 			n = n->left;
-// 		} else{
-// 			n = n->right;
-// 		}
- 
-// 		if(n->letter){
-// 			putchar(n->letter);
-// 			//fputc(n->letter,output);
-// 			n = t;
-// 		}
-// 	}
- 
-// 	putchar('\n');
-// 	if (t != n){
-// 		printf("garbage input\n");
-// 	} 
-// }
 
 
 // not complete
@@ -152,12 +134,14 @@ int main(void){
 	// fclose(input);
 	// input = fopen(filename, "r");
 	rewind(input);
-	encode(input, buf, codes);
-	printf("hey6\n");
-	printf("encoded: %s\n", buf);
- 
+	encode(input, buf, codes,output);
+	// printf("hey6\n");
+	// printf("encoded: %s\n", buf);
+	fclose(output);
+	output = fopen("output.txt", "r");
+ 	//rewind(output);
 	printf("decoded: ");
-	decode(input, buf, n);
+	decode(output, buf, n);
  	// fclose(input);
  	// fclose(output);
 	return 0;

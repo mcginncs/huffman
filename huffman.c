@@ -78,6 +78,49 @@ void encode(FILE *input, char *out, char** codes){
 	}
 }
 
+void decode(FILE *input, char *out, node* n){
+	char x;
+	node* temp = n;
+	while ((x=fgetc(input))!=EOF){
+
+		if(x=='1'){
+			n = n->right;
+		} else {
+			n = n->left;
+		}
+		if(n->letter){
+			putchar(n->letter);
+			temp = n;
+		}
+	}
+}
+
+
+
+//Decodes
+//Change slightly to make output in file
+// void decode(const char *s, node t){//, FILE *output){
+// 	node n = t;
+// 	while (*s) {
+// 		if (*s++ == '0'){
+// 			n = n->left;
+// 		} else{
+// 			n = n->right;
+// 		}
+ 
+// 		if(n->letter){
+// 			putchar(n->letter);
+// 			//fputc(n->letter,output);
+// 			n = t;
+// 		}
+// 	}
+ 
+// 	putchar('\n');
+// 	if (t != n){
+// 		printf("garbage input\n");
+// 	} 
+// }
+
 
 // not complete
 int main(void){
@@ -114,7 +157,7 @@ int main(void){
 	printf("encoded: %s\n", buf);
  
 	printf("decoded: ");
-	//decode(buf, n);
+	decode(input, buf, n);
  	// fclose(input);
  	// fclose(output);
 	return 0;

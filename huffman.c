@@ -12,92 +12,184 @@
  
 // Frequency array - has an element for each char
 int freqs[128];
-static char *codes2[] = {
-	'110010',
-	'110001',
-	'00',
-	'11000011110',
-	'0100100',
-	'0100111101100001000',
-	'0100111101100101101',
-	'11000010',
-	'110000110100000',
-	'010011110110011',
-	'101101',
-	'010010111',
-	'1001011',
-	'01001111011000010011',
-	'11000011010001100',
-	'1100001101000010',
-	'0100111101100100',
-	'010011110110010111',
-	'010011110110000101',
-	'110000110100011011',
-	'01001111011001010',
-	'0100111101100011',
-	'0100111101100000',
-	'01001111011000011',
-	'1100001101000011',
-	'110000110100010',
-	'01001111011000010010',
-	'0100101101',
-	'010011100',
-	'1100000001',
-	'110000110101',
-	'11000000000',
-	'01001110111',
-	'01001011001',
-	'110000110001',
-	'0100111110',
-	'11000001',
-	'010010101',
-	'0100111101101',
-	'0100111111',
-	'110000001',
-	'11000011001',
-	'01001011000',
-	'01001110110',
-	'1100001101000111',
-	'010011110111',
-	'0100111100',
-	'1100001110',
-	'11000011010010',
-	'11000011010011',
-	'0100101001',
-	'110000110100011010',
-	'11000000001',
-	'0100111101100010',
-	'01001111011001011001',
-	'01001111011001011000',
-	'0100101000',
-	'01001111010',
-	'0111',
-	'010000',
-	'100100',
-	'10111',
-	'1111',
-	'101000',
-	'101001',
-	'11101',
-	'11011',
-	'11000011011',
-	'1001010',
-	'10011',
-	'101011',
-	'0101',
-	'0110',
-	'010001',
-	'11000011111',
-	'11010',
-	'11100',
-	'1000',
-	'110011',
-	'0100110',
-	'101100',
-	'0100111010',
-	'101010',
-	'110000110000'
-}
+
+static int letters[] = {
+32,
+97,
+116,
+111,
+110,
+101,
+115,
+108,
+105,
+44,
+104,
+114,
+100,
+99,
+98,
+10,
+13,
+121,
+117,
+112,
+109,
+119,
+46,
+102,
+103,
+34,
+73,
+107,
+118,
+39,
+65,
+45,
+77,
+74,
+72,
+66,
+76,
+83,
+84,
+63,
+87,
+95,
+79,
+68,
+69,
+78,
+96,
+80,
+89,
+70,
+33,
+120,
+106,
+113,
+67,
+82,
+71,
+122,
+75,
+86,
+85,
+59,
+40,
+41,
+56,
+81,
+49,
+55,
+58,
+50,
+90,
+57,
+48,
+54,
+53,
+52,
+51,
+88,
+36,
+38,
+47,
+93,
+91,
+62
+};
+static int codes[] = {
+00,
+1111,
+0111,
+0110,
+1000,
+0101,
+11100,
+11010,
+10111,
+11101,
+10011,
+11011,
+101011,
+101101,
+110011,
+101001,
+101100,
+101010,
+010001,
+100100,
+010000,
+101000,
+1001010,
+0100100,
+110010,
+1001011,
+0100110,
+110001,
+11000001,
+11000010,
+010011100,
+010010101,
+110000001,
+010010111,
+1100000001,
+0100111110,
+0100111010,
+0100111111,
+0100111100,
+1100001110,
+0100101001,
+0100101101,
+0100101000,
+01001110111,
+01001011001,
+11000011110,
+01001011000,
+11000011111,
+11000011011,
+11000011001,
+11000000000,
+11000000001,
+01001110110,
+01001111010,
+110000110101,
+110000110000,
+010011110111,
+110000110001,
+0100111101101,
+11000011010011,
+11000011010010,
+110000110100000,
+010011110110011,
+110000110100010,
+0100111101100011,
+0100111101100100,
+1100001101000010,
+1100001101000111,
+0100111101100010,
+1100001101000011,
+0100111101100000,
+01001111011000011,
+01001111011001010,
+11000011010001100,
+110000110100011010,
+010011110110000101,
+010011110110010111,
+110000110100011011,
+0100111101100101101,
+0100111101100001000,
+01001111011000010011,
+01001111011001011000,
+01001111011000010010,
+01001111011001011001
+};
+
+int len = sizeof(letters)/sizeof(letters[0]);
+
+
+
 
 // For qsort
 int compareFreq(const void *a, const void *b){
@@ -137,7 +229,7 @@ node* buildTree(FILE *input){
 			n->letter = i;
 			n->freq = frequency[i];
 			nodes[count++] = n;
-		}
+		} 
 	}
 	//Sort nodes
 	//get the lowest 2 freq nodes and create a parent node for that and add it back to queue
@@ -172,31 +264,69 @@ void buildCodes(node *n, char **codes, char *code){
  //        if(n->right) buildCodes(n->right, codes, concat(code, '1'));
  //    }
 }
+//string compare
+int stringComp(char * a, char *b){
+	
+	int ai = atoi( a );
+	int bi = atoi(b);
+	printf("a: %d b: %d\n",ai,bi );
+	if(strcmp(a,b)==0){
+		return 1;
+	}
+	if(a==b){
+		return 1;
+	} else{
+		return 0;
+	}
+}
 
 //Encodes file
-void encode(FILE *input, char** codes, FILE *output){
+void encode(FILE *input, FILE *output){ // char** codes,
 	char x;
+	int a,b;
+	int i;
 	while ((x=fgetc(input))!=EOF){
-		fputs(codes[x],output);
+		//a = (int)x - '0';
+		for(i=0;i<len;i++){
+			 
+			// printf("letters: %c %s-\n", *x, letters[i]);
+			// strncpy((char *)letters[i],y,sizeof(y));
+			//if(strcmp(x,letters[i])==0){
+			//if(stringComp(x,(char *)letters[i])){
+			if(x==letters[i]){
+				// printf("letter: %c\n", x);
+				// printf("code: %s\n",codes[i]);
+				// printf("i: %d\n",i );
+
+				fputs(codes[i],output);
+				break;
+			}
+		}
+		//fputs(codes[x],output);
 
 	}
 }
 
-void decode(FILE *input, node* n){
+
+void decode(FILE *input){//, node* n){
 	char x;
-	char code;
-	node* temp = n;
+	char *code;
+	
 	while ((x=fgetc(input))!=EOF){
 		int i;
 		for (i = 0; i < 128; i++){
-			strcat(x,code);
-			if (stcmp(codes[i],code)) {
+			//strcat(x,code);
+			code = concat(code,x);
+			if (strcmp(codes[i],code)) {
 				//match
 				printf("%c",i);
 				free(code);
 				break;
 			}
 		}
+	}
+	////
+		// node* temp = n;
 	// 	if(x=='1'){
 	// 		temp = temp->right;
 	// 	} else {
@@ -211,35 +341,39 @@ void decode(FILE *input, node* n){
 
 // not complete
 int main(void){
-	char* filename = "text.txt";
+	char* filename = "text2.txt";
 	FILE *input, *output;
     input = fopen(filename, "r");
-    output = fopen("output.bin","wb");
+    output = fopen("output.txt","w");
 	
-	node *n = buildTree(input);
+	//////
+	// node *n = buildTree(input);
 
-	static char *codes[128];
+	// static char *codes[128];
 
-	char *code = (char *)malloc(sizeof(char));
-	buildCodes(n,codes,code);
+	// char *code = (char *)malloc(sizeof(char));
+	// buildCodes(n,codes,code);
 
-	int i;
-	for (i = 0; i < 128; i++){
-		if (codes[i]) {
-			//printf("'%c': %s\n", i, codes[i]);
-			//printf("'%s',\n",codes[i]);
-		}
-	}
+	// int i;
+	// for (i = 0; i < 128; i++){
+	// 	if (codes[i]) {
+	// 		printf("'%d': %s\n", i, codes[i]);
+	// 		//printf("'%s',\n",codes[i]);
+	// 	}
+	// }
 
-	//rewind(input);
-	// encode(input, codes,output);
+	/////
 
-	// fclose(output);
-	// output = fopen("output.bin", "rb");
 
-	// printf("decoded: ");
-	// decode(output, n);
- // 	fclose(input);
- // 	fclose(output);
-	// return 0;
+	printf("before encode\n");
+	encode(input, output);
+	printf("after encode\n");
+	fclose(output);
+	output = fopen("output.txt", "r");
+
+	printf("decoded: \n");
+	decode(output);//, n);
+ 	fclose(input);
+ 	fclose(output);
+	return 0;
 }

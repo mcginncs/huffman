@@ -12,33 +12,27 @@
  
 // Frequency array - has an element for each char
 int freqs[128];
-//node *root;
 
 // For qsort
 int compareFreq(const void *a, const void *b){
-    const node **x = (const node **) a;
-    const node **y = (const node **) b;
-    if((*x)->freq == (*y)->freq) return 0;
-    else return ((*x)->freq < (*y)->freq) ? 1 : -1;
-}
-// create a new string with given letter concatenated on to the prefix 
-char *concat(char *prefix, char letter)
-{
-    char *result = (char *)malloc(strlen(prefix) + 2);
-    sprintf(result, "%s%c", prefix, letter);
-    return result;
+    const node **n1 = (const node **) a;
+    const node **n2 = (const node **) b;
+    if((*n1)->freq == (*n2)->freq){
+    	return 0;
+    } else if ((*n1)->freq < (*n2)->freq){
+		return 1;
+	} else {
+		return -1;
+	}
 }
 
-// void printTree(node *n){
-// 	//node *temp;
-// 	printf("%c\n",n->letter );
-// 	if(n->right){
-// 		printTree(n->right);
-// 	}
-// 	if(n->left){
-// 		printTree(n->left);
-// 	}
-// }
+//Concat 2 strings because it doesnt work my other way
+char *concat(char *a, char b){
+    char *cat = (char *)malloc(strlen(a) + 2);
+    sprintf(cat, "%s%c", a, b);
+    return cat;
+}
+
 // Adds nodes to tree based on frequency
 node* buildTree(FILE *input){
 	int frequency[128]={0};
@@ -46,71 +40,65 @@ node* buildTree(FILE *input){
 	while ((x=fgetc(input))!=EOF){
 		frequency[(int)x]++; // Increment the frequency of this char
 	}
- 	node *queue[128]; // Array of node pointers, one for each char (some may be 0).
+	//128 characters
+ 	node *nodes[128]; // Array of node pointers, one for each char (some may be 0).
 	
  	int count=0;
  	int i=0;
 	for(i=0;i<128;i++){ // Loop through each char
-		if(frequency[i]){ // If this char appears in the text file add its node to the queue
+		if(frequency[i]){ // If this char appears in the text file add its node to the array of ndoes
 			node *n = (node *)malloc(sizeof(node));
 			n->letter = i;
 			n->freq = frequency[i];
-			queue[count++] = n;
+			nodes[count++] = n;
 		}
 	}
-	//root = queue[0];
-	// Sort the queue (I think?)
+	//Sort nodes
+	//get the lowest 2 freq nodes and create a parent node for that and add it back to queue
 	while(count>1){ 
 		node *n = (node *)malloc(sizeof(node));
-		qsort(queue,count,sizeof(node *),compareFreq);
-		n->left = queue[--count];
-		n->right = queue[--count];
-		
-		//if(!n->letter)
-		 n->freq = n->left->freq + n->right->freq;
-		//n->freq = n->left->freq + n->right->freq;
-		queue[count++] = n;
+		qsort(nodes,count,sizeof(node *),compareFreq);
+		n->left = nodes[--count];
+		n->right = nodes[--count];
+		if(!n->freq){
+			n->freq = n->left->freq + n->right->freq;
+		}
+		nodes[count++] = n;
 	}
-	//printTree(queue[0]);
-	return queue[0];
+	return nodes[0];
 }
 
 
 // Traverse the tree to create the codes for each node
 void buildCodes(node *n, char **codes, char *code){
 	//printf("buildCodes(char = %c)\n", n->letter);
-    if(!n->left && !n->right) {
+	// I think this way is more simple
+	if(n->letter){
 		codes[n->letter] = code;
+		return;
 	}
-    else
-    {
-    	//char* result = (char *)malloc(strlen(code) + 2);
-    	//sprintf(result, "%s%c", code, '0');
-        if(n->left) buildCodes(n->left, codes,concat(code, '0'));// result );
-		//sprintf(result, "%s%c", code, '1');
-        if(n->right) buildCodes(n->right, codes,concat(code, '1'));//result);
-        free(code);
-    }
+	buildCodes(n->left, codes, concat(code, '0'));
+    buildCodes(n->right, codes, concat(code, '1'));
+ //    if(!n->left && !n->right) {
+	// 	codes[n->letter] = code;
+	// } else {
+ //        if(n->left) buildCodes(n->left, codes, concat(code, '0'));
+ //        if(n->right) buildCodes(n->right, codes, concat(code, '1'));
+ //    }
 }
 
 //Encodes file
-void encode(FILE *input, char *out, char** codes, FILE *output){
+void encode(FILE *input, char** codes, FILE *output){
 	char x;
 	while ((x=fgetc(input))!=EOF){
 		fputs(codes[x],output);
-		out += strlen(codes[x]);
 	}
-	printf("done encode\n");
 }
 
-void decode(FILE *input, char *out, node* n){
+void decode(FILE *input, node* n){
 	char x;
 	node* temp = n;
 	while ((x=fgetc(input))!=EOF){
-		// if(temp->letter){
-		// 	putchar(temp->letter);
-		// 	temp = n;
-		// }
 		if(x=='1'){
 			temp = temp->right;
 		} else {
@@ -120,53 +108,38 @@ void decode(FILE *input, char *out, node* n){
 			putchar(temp->letter);
 			temp = n;
 		}
-		
 	}
-	printf("decoding\n");
 }
-
-
-
 
 // not complete
 int main(void){
 	char* filename = "text.txt";
 	FILE *input, *output;
-
-	int i;
-    char buf[1024];
     input = fopen(filename, "r");
     output = fopen("output.txt","w");
 	
 	node *n = buildTree(input);
 
-	
 	static char *codes[128];
-	
-	char *prefix = (char *)calloc(1, sizeof(char));
-	
-	buildCodes(n,codes,prefix);
-	//printf("THIS WON'T DISPLAY UNTIL buildCodes() BUG IS FIXED\n");
-	
+	char *code = (char *)malloc(sizeof(char));
+	buildCodes(n,codes,code);
+
+	int i;
 	for (i = 0; i < 128; i++){
 		if (codes[i]) {
 			printf("'%c': %s\n", i, codes[i]);
 		}
 	}
 
-	printf("hey5\n");
-	// fclose(input);
-	// input = fopen(filename, "r");
 	rewind(input);
-	encode(input, buf, codes,output);
-	// printf("hey6\n");
-	// printf("encoded: %s\n", buf);
+	encode(input, codes,output);
+
 	fclose(output);
 	output = fopen("output.txt", "r");
- 	//rewind(output);
+
 	printf("decoded: ");
-	decode(output, buf, n);
- 	// fclose(input);
- 	// fclose(output);
+	decode(output, n);
+ 	fclose(input);
+ 	fclose(output);
 	return 0;
 }

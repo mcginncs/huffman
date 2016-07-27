@@ -12,7 +12,7 @@
  
 // Frequency array - has an element for each char
 int freqs[128];
-node *root;
+//node *root;
 
 // For qsort
 int compareFreq(const void *a, const void *b){
@@ -21,7 +21,24 @@ int compareFreq(const void *a, const void *b){
     if((*x)->freq == (*y)->freq) return 0;
     else return ((*x)->freq < (*y)->freq) ? 1 : -1;
 }
+// create a new string with given letter concatenated on to the prefix 
+char *concat(char *prefix, char letter)
+{
+    char *result = (char *)malloc(strlen(prefix) + 2);
+    sprintf(result, "%s%c", prefix, letter);
+    return result;
+}
 
+// void printTree(node *n){
+// 	//node *temp;
+// 	printf("%c\n",n->letter );
+// 	if(n->right){
+// 		printTree(n->right);
+// 	}
+// 	if(n->left){
+// 		printTree(n->left);
+// 	}
+// }
 // Adds nodes to tree based on frequency
 node* buildTree(FILE *input){
 	int frequency[128]={0};
@@ -41,39 +58,38 @@ node* buildTree(FILE *input){
 			queue[count++] = n;
 		}
 	}
-	root = queue[0];
+	//root = queue[0];
 	// Sort the queue (I think?)
 	while(count>1){ 
 		node *n = (node *)malloc(sizeof(node));
 		qsort(queue,count,sizeof(node *),compareFreq);
 		n->left = queue[--count];
 		n->right = queue[--count];
-		n->freq = n->left->freq + n->right->freq;
+		
+		//if(!n->letter)
+		 n->freq = n->left->freq + n->right->freq;
+		//n->freq = n->left->freq + n->right->freq;
 		queue[count++] = n;
 	}
-	
+	//printTree(queue[0]);
 	return queue[0];
 }
 
-void addNode(node *n, node *root){
-	if(n->freq>root->freq){
-
-	}
-}
 
 // Traverse the tree to create the codes for each node
 void buildCodes(node *n, char **codes, char *code){
-	printf("buildCodes(char = %c)\n", n->letter);
+	//printf("buildCodes(char = %c)\n", n->letter);
     if(!n->left && !n->right) {
 		codes[n->letter] = code;
 	}
     else
     {
-    	char* result = (char *)malloc(strlen(code) + 2);
-    	sprintf(result, "%s%c", code, '0');
-        if(n->left) buildCodes(n->left, codes, result );
-		sprintf(result, "%s%c", code, '1');
-        if(n-> right) buildCodes(n->right, codes, result);
+    	//char* result = (char *)malloc(strlen(code) + 2);
+    	//sprintf(result, "%s%c", code, '0');
+        if(n->left) buildCodes(n->left, codes,concat(code, '0'));// result );
+		//sprintf(result, "%s%c", code, '1');
+        if(n->right) buildCodes(n->right, codes,concat(code, '1'));//result);
+        free(code);
     }
 }
 
@@ -91,6 +107,10 @@ void decode(FILE *input, char *out, node* n){
 	char x;
 	node* temp = n;
 	while ((x=fgetc(input))!=EOF){
+		// if(temp->letter){
+		// 	putchar(temp->letter);
+		// 	temp = n;
+		// }
 		if(x=='1'){
 			temp = temp->right;
 		} else {
@@ -100,6 +120,7 @@ void decode(FILE *input, char *out, node* n){
 			putchar(temp->letter);
 			temp = n;
 		}
+		
 	}
 	printf("decoding\n");
 }
@@ -125,7 +146,7 @@ int main(void){
 	char *prefix = (char *)calloc(1, sizeof(char));
 	
 	buildCodes(n,codes,prefix);
-	printf("THIS WON'T DISPLAY UNTIL buildCodes() BUG IS FIXED\n");
+	//printf("THIS WON'T DISPLAY UNTIL buildCodes() BUG IS FIXED\n");
 	
 	for (i = 0; i < 128; i++){
 		if (codes[i]) {

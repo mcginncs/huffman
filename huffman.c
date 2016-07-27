@@ -12,6 +12,7 @@
  
 // Frequency array - has an element for each char
 int freqs[128];
+node *root;
 
 // For qsort
 int compareFreq(const void *a, const void *b){
@@ -40,17 +41,24 @@ node* buildTree(FILE *input){
 			queue[count++] = n;
 		}
 	}
-	
+	root = queue[0];
 	// Sort the queue (I think?)
 	while(count>1){ 
 		node *n = (node *)malloc(sizeof(node));
 		qsort(queue,count,sizeof(node *),compareFreq);
 		n->left = queue[--count];
 		n->right = queue[--count];
+		n->freq = n->left->freq + n->right->freq;
 		queue[count++] = n;
 	}
 	
 	return queue[0];
+}
+
+void addNode(node *n, node *root){
+	if(n->freq>root->freq){
+
+	}
 }
 
 // Traverse the tree to create the codes for each node

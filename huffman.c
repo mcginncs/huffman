@@ -141,7 +141,7 @@ static char *indexedCodes[] = {
 
 // Encodes the file
 void encode(FILE *input, FILE *encodedOutput){
-  char bytes[16384]; // TODO How big should this be?
+  char bytes[20480]; // TODO How big should this be?
   bytes[0] = '\0';
   int i, numBits = 0;
   char x;
@@ -225,7 +225,7 @@ void decode(FILE *input, FILE *output){
 }
 
 int main(void){
-	char* filename = "book.txt";
+	char* filename = "text.txt";
 	FILE *input, *encodedOutput, *decodedOutput;
 	input = fopen(filename, "r");
 	encodedOutput = fopen("encodedOutput.txt","w");

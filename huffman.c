@@ -141,7 +141,7 @@ static char *indexedCodes[] = {
 
 // Encodes the file
 void encode(FILE *input, FILE *encodedOutput){
-  char bytes[16384]; // TODO How big should this be?
+  char bytes[163840]; // TODO How big should this be?
   bytes[0] = '\0';
   int i, numBits = 0;
   char x;
@@ -151,7 +151,7 @@ void encode(FILE *input, FILE *encodedOutput){
           numBits += strlen(indexedCodes[(int)x]);
   }
  
- // Add padding - 0101010
+ // Add padding - 0100110
  switch(numBits % 8) {
    case 7:
      strcat(bytes, "0");
@@ -163,16 +163,16 @@ void encode(FILE *input, FILE *encodedOutput){
      strcat(bytes, "010"); 
      numBits += 3;
    case 4:
-     strcat(bytes, "0101");
+     strcat(bytes, "0100");
      numBits += 4;
    case 3:
-     strcat(bytes, "01010"); 
+     strcat(bytes, "01001"); 
      numBits += 5;
    case 2:
-     strcat(bytes, "010101"); 
+     strcat(bytes, "010011"); 
      numBits += 6;
    case 1:
-     strcat(bytes, "0101010");
+     strcat(bytes, "0100110");
      numBits += 7;
  }
  
@@ -194,7 +194,7 @@ void decode(FILE *input, FILE *output){
 	char x;
 	int i;
  
-  char binaryString[20480]; // TODO How big should this be?
+  char binaryString[163500]; // TODO How big should this be?
   binaryString[0] = '\0';
   int binarySize = 0;
 	
@@ -213,15 +213,13 @@ void decode(FILE *input, FILE *output){
       	pos = 2*pos;
       } else if(binaryString[i] == '1'){
       	pos = 2*pos + 1;
-      } 
-     // printf("pos: %d\n",pos );
-     //printf("%c",lettersArray[pos] );
+      }
       if(lettersArray[pos]){ // if the code corresponds to a letter, add it to decodedOutput file and reset position
   		   putc(lettersArray[pos], output);
        	 pos = 1;
       }
    }
-  //printf("Decoded binary without padding: \n%s\n", binaryString);
+  printf("Decoded binary without padding: \n%s\n", binaryString);
 }
 
 int main(void){

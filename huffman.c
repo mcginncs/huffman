@@ -252,8 +252,8 @@ int main(void){
  	fclose(encodedOutput);
   fclose(decodedOutput);
   clock_t timeEnd = clock();
-  printf("Total Time = %d milliseconds\n", (timeEnd - timeStart) * 1000 / CLOCKS_PER_SEC); 
-  printf("Encoding Time = %d milliseconds\n", (timeEndEncoding - timeStartEncoding) * 1000 / CLOCKS_PER_SEC);
-  printf("Decoding Time = %d milliseconds\n", (timeEndDecoding - timeStartDecoding) * 1000 / CLOCKS_PER_SEC);
+  printf("Total Time = %d milliseconds\n", ((int)timeEnd - (int)timeStart) * 1000 / (int)CLOCKS_PER_SEC); 
+  printf("Encoding Time = %d milliseconds\n", ((int)timeEndEncoding - (int)timeStartEncoding) * 1000 / (int)CLOCKS_PER_SEC);
+  printf("Decoding Time = %d milliseconds\n", ((int)timeEndDecoding - (int)timeStartDecoding) * 1000 / (int)CLOCKS_PER_SEC);
 	return 0;
 }

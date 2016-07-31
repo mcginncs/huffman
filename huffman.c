@@ -141,7 +141,7 @@ static char *indexedCodes[] = {
 
 // Encodes the file
 void encode(FILE *input, FILE *encodedOutput){
-  char bytes[163840]; // TODO How big should this be?
+  char bytes[20480]; // TODO How big should this be?
   bytes[0] = '\0';
   int i, numBits = 0;
   char x;

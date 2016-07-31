@@ -190,39 +190,61 @@ static char *codes[] = {
 int len = sizeof(letters)/sizeof(letters[0]);
 int arraylen =  sizeof(lettersArray)/sizeof(lettersArray[0]);
 
-//working encode
-//Encodes file
-// void encode(FILE *input, FILE *output){
-// 	char x;
-// 	int a,b;
-// 	int i;
-// 	while ((x = fgetc(input))!= EOF){ // Loop through each char in input file
-// 		for(i = 0; i < len; i++){ // Loop through each char in our lookup table
-//      // printf("x = %c, letters[i] = %c\n", x, letters[i]);
-// 			if(x == letters[i]){ // If you find a match, put the corresponding code into the output file
-// 				fputs(codes[i], output);
-// 				break;
-// 			}
-// 		}
-// 	}
-// }
-
-
-//test enocde
+// Encodes the file
 void encode(FILE *input, FILE *output){
-	char x;
-	int a,b;
-	int i;
-	while ((x = fgetc(input))!= EOF){ // Loop through each char in input file
-		for(i = 0; i < arraylen; i++){ // Loop through each char in our lookup table
-     // printf("x = %c, letters[i] = %c\n", x, letters[i]);
-			if(x == lettersArray[i]){ // If you find a match, put the corresponding code into the output file
-				//printf("x: %c, letter: %c, code: %s\n", x, lettersArray[i],codesArray[i]);
-				fputs(codesArray[i], output);
-				break;
+
+  char bytes[4960];
+  bytes[0] = '\0';
+  int i, numBits = 0;
+  char x;
+
+  while((x = fgetc(input))!= EOF){ // Loop through each char in input file
+		for(i = 0; i < len; i++){ // Loop through each char in our lookup table
+			if(x == letters[i]){ // If you find a match, append the corresponding code into bytess[]
+          strcat(bytes, codes[i]);
+          printf("%s\n", bytes);
+          numBits += strlen(codes[i]);
 			}
 		}
 	}
+ 
+ // Add padding - 0100111
+ switch(numBits % 8) {
+   case 7:
+     strcat(bytes, "0");
+     numBits += 1;
+   case 6:
+     strcat(bytes, "01"); 
+     numBits += 2;
+   case 5:
+     strcat(bytes, "010"); 
+     numBits += 3;
+   case 4:
+     strcat(bytes, "0100");
+     numBits += 4;
+   case 3:
+     strcat(bytes, "01001"); 
+     numBits += 5;
+   case 2:
+     strcat(bytes, "010011"); 
+     numBits += 6;
+   case 1:
+     strcat(bytes, "0100111");
+     numBits += 7;
+ }
+ 
+ printf("With Padding: %s\n", bytes);
+ 
+ char sub[9];
+ 
+ for(i = 0; i < (numBits / 8); i++) {
+    strncpy(sub, bytes + (i*8), 8);
+    sub[8] = '\0';
+    printf("sub = %s\n", sub);
+    long l = strtol(sub, 0, 2);
+    unsigned char b = l;
+    fwrite(&b, 1, 1, output);
+ }
 }
 
 void decode(FILE *input){
@@ -266,7 +288,7 @@ void decode(FILE *input){
 
 // not complete
 int main(void){
-	char* filename = "book.txt";
+	char* filename = "text.txt";
 	FILE *input, *output;
 	input = fopen(filename, "r");
 	output = fopen("output.txt","w");

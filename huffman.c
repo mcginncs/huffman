@@ -191,7 +191,7 @@ int len = sizeof(letters)/sizeof(letters[0]);
 int arraylen =  sizeof(lettersArray)/sizeof(lettersArray[0]);
 
 // Encodes the file
-void encode(FILE *input, FILE *output){
+void encode(FILE *input, FILE *encodedOutput){
 
   char bytes[4960];
   bytes[0] = '\0';
@@ -233,76 +233,73 @@ void encode(FILE *input, FILE *output){
      numBits += 7;
  }
  
- printf("With Padding: %s\n", bytes);
+ printf("With Padding:\n%s\n", bytes);
  
  char sub[9];
  
+ // Write to encodedOutput file 1 byte at a time
  for(i = 0; i < (numBits / 8); i++) {
     strncpy(sub, bytes + (i*8), 8);
     sub[8] = '\0';
-    printf("sub = %s\n", sub);
     long l = strtol(sub, 0, 2);
     unsigned char b = l;
-    fwrite(&b, 1, 1, output);
+    fwrite(&b, 1, 1, encodedOutput);
  }
 }
 
-void decode(FILE *input){
+void decode(FILE *input, FILE *output){
 	char x;
-	char code[25]; 
-	char code2[25];
 	int i;
-	int count = 0;
-	int pos = 1;
-	while ((x=fgetc(input))!=EOF){
-		// printf("pos: %d\n",pos );
-		//printf("letter: %c\n", lettersArray[pos]);
-		 if(x=='0'){
-			pos=2*pos;
-		} else if(x=='1'){
-			pos=2*pos+1;
-		} 
-		if(lettersArray[pos]){
-			//printf("DECODE letter: %c, code: %s\n", lettersArray[pos-1],codesArray[pos-1]);
-			//printf("Code: %s \n",codesArray[pos]);
-			putchar(lettersArray[pos]);
-			pos = 1;
-		} 
-
-		// code[count++] = x;
-		// printf("Code: %s i: %c\n",code,x);
-		// for (i = 0; i < 128; i++){
-		// 	//strcat(code,x);
-		// 	//code = concat(code,x);
-		// 	strcpy(code2,codes[i]);
-		// 	if (strcmp(code2,code)==0) {
-		// 		//match
-		// 		//printf("Letter: %c i: %d\n",letters[i],i);
-		// 		//free(code);
-		// 		//memset(code, 0, 25);
-		// 		//break;
-		// 	}
-		// }
-	}
+ 
+  char binaryString[4096];
+  binaryString[0] = '\0';
+  int binarySize = 0;
+	
+	while ((x = fgetc(input))!= EOF){
+    for (i = 7; i >= 0; --i) // Take char and shift to read each bit
+    {
+        binaryString[binarySize] = ((x & (1 << i)) ? '1' : '0' ); // Write each bit individually
+        binarySize++;
+    }
+   }
+   binaryString[binarySize] = '\0';
+   
+   int pos = 1;
+   
+   for(i = 0; i < strlen(binaryString); i++) { // Loop through binaryString character by character until '\0' reached
+   
+    printf("next bit = %c\n", binaryString[i]);
+    
+      if(binaryString[i] == '0'){
+      	pos = 2*pos;
+      } else if(binaryString[i] == '1'){
+      	pos = 2*pos + 1;
+      } 
+     
+     if(lettersArray[pos]){ // if the code corresponds to a letter, add it to decodedOutput file and reset position
+  			putc(lettersArray[pos], output);
+        pos = 1;
+ 		 }
+   }
+  printf("binaryString: \n%s\n", binaryString);
 }
 
-// not complete
 int main(void){
 	char* filename = "text.txt";
-	FILE *input, *output;
+	FILE *input, *encodedOutput, *decodedOutput;
 	input = fopen(filename, "r");
-	output = fopen("output.txt","w");
+	encodedOutput = fopen("encodedOutput.txt","w");
 
-	printf("before encode\n");
-	encode(input, output);
-	printf("after encode\n");
+	printf("Encoding:\n");
+	encode(input, encodedOutput);
+	fclose(encodedOutput);
  
-	fclose(output);
-	output = fopen("output.txt", "r");
-
-	printf("decoded: \n");
-	decode(output);//, n);
+  printf("\nDecoding: \n");
+	encodedOutput = fopen("encodedOutput.txt", "r");
+  decodedOutput = fopen("decodedOutput.txt","w");
+	decode(encodedOutput, decodedOutput);
  	fclose(input);
- 	fclose(output);
+ 	fclose(encodedOutput);
+  fclose(decodedOutput);
 	return 0;
 }

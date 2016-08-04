@@ -188,26 +188,6 @@ void encode(FILE *input, FILE *encodedOutput){
 }
 
 void decode(FILE *input, FILE *output){
-///////////
-  /*
-  char x;
-  int pos = 1;
-  while ((x=fgetc(input))!=EOF){
-    if(x=='1'){
-      pos = (pos << 1) + 1;
-    } else {
-       pos = pos << 1;
-    }
-    if(lettersArray[pos]){
-      putc(lettersArray[pos], output);
-      pos = 1;
-    }
-
-
-  }*/
-
-  /////////////////
-	char x;
 	short int i;
  
   char binaryString[16350]; // TODO How big should this be?
@@ -226,29 +206,23 @@ void decode(FILE *input, FILE *output){
    int pos = 1;
    for(i = 0; i < strlen(binaryString); i+=2) { // Loop through binaryString character by character until '\0' reached   
       if(binaryString[i] == '0'){
-        //pos = pos << 1;
         __asm { mov pos, pos, asl #1; }
       } else if(binaryString[i] == '1'){
-        //pos = (pos << 1) + 1;
         __asm { mov pos, pos, asl #1; }
         __asm { add pos, pos, #1; }
       }
       if(lettersArray[pos]){ // if the code corresponds to a letter, add it to decodedOutput file and reset position
   		   putc(lettersArray[pos], output);
-         //pos = 1;
          __asm { mov pos, #1; }
       }
       if(binaryString[i+1] == '0'){
-        //pos = pos << 1;
         __asm { mov pos, pos, asl #1; }
       } else if(binaryString[i+1] == '1'){
-        //pos = (pos << 1) + 1;
         __asm { mov pos, pos, asl #1; }
         __asm { add pos, pos, #1; }
       }
       if(lettersArray[pos]){ 
   		  putc(lettersArray[pos], output);
-       	//pos = 1;
          __asm { mov pos, #1; }
       }
    }

@@ -228,10 +228,14 @@ void decode(FILE *input, FILE *output){
    }
 }
 
-int main(void){
+int main(int argc, char *argv[]){
+   char* filename = "";
+  if(argc == 2){
+    filename = argv[1];
+  } else{
+    filename = "book.txt";
+  }
 	clock_t timeStart = clock();
-
-	char* filename = "book.txt";
 	FILE *input, *encodedOutput, *decodedOutput;
 	short int i = 0;
 

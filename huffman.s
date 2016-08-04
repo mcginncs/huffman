@@ -235,10 +235,10 @@ decode:
 	movq	%rdi, %rbx
 	movq	%rbx, %rdi
 	movq	%rsi, %rbp
-	subq	$16376, %rsp
-	.cfi_def_cfa_offset 16416
+	subq	$20504, %rsp
+	.cfi_def_cfa_offset 20544
 	movq	%fs:40, %rax
-	movq	%rax, 16360(%rsp)
+	movq	%rax, 20488(%rsp)
 	xorl	%eax, %eax
 	movb	$0, (%rsp)
 	call	fgetc
@@ -369,10 +369,10 @@ decode:
 	.p2align 4,,10
 	.p2align 3
 .L59:
-	movq	16360(%rsp), %rax
+	movq	20488(%rsp), %rax
 	xorq	%fs:40, %rax
 	jne	.L61
-	addq	$16376, %rsp
+	addq	$20504, %rsp
 	.cfi_remember_state
 	.cfi_def_cfa_offset 40
 	popq	%rbx
@@ -396,9 +396,9 @@ decode:
 .LHOTE8:
 	.section	.rodata.str1.1
 .LC9:
-	.string	"r"
-.LC10:
 	.string	"book.txt"
+.LC10:
+	.string	"r"
 .LC11:
 	.string	"w"
 .LC12:
@@ -442,11 +442,16 @@ main:
 	pushq	%rbx
 	.cfi_def_cfa_offset 56
 	.cfi_offset 3, -56
+	movl	$.LC9, %ebx
 	subq	$24, %rsp
 	.cfi_def_cfa_offset 80
+	cmpl	$2, %edi
+	jne	.L63
+	movq	8(%rsi), %rbx
+.L63:
 	call	clock
-	movl	$.LC9, %esi
-	movl	$.LC10, %edi
+	movq	%rbx, %rdi
+	movl	$.LC10, %esi
 	movq	%rax, %r15
 	call	fopen
 	movl	$.LC11, %esi
@@ -463,7 +468,7 @@ main:
 	movq	%rbp, %rdi
 	movq	%rax, %rbx
 	call	fclose
-	movl	$.LC9, %esi
+	movl	$.LC10, %esi
 	movl	$.LC12, %edi
 	subl	%r14d, %ebx
 	call	fopen
@@ -513,9 +518,9 @@ main:
 	movl	$1, %edi
 	movl	%ecx, %eax
 	imull	%ebp
+	sarl	$6, %edx
 	sarl	$31, %ecx
 	xorl	%eax, %eax
-	sarl	$6, %edx
 	subl	%ecx, %edx
 	call	__printf_chk
 	addq	$24, %rsp
